@@ -1,6 +1,6 @@
 /* HM-LGW emulation for HM-MOD-RPI
  *
- * Copyright (c) 2015-2023 Oliver Kastl, Jens Maus, Jérôme Pech
+ * Copyright (c) 2015-2025 Oliver Kastl, Jens Maus, Jérôme Pech, Peter Henning
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -56,6 +56,7 @@ static int g_termEventFd = -1;
 //-- PAH
 static struct gpiod_line *g_resetLine;
 //static int g_resetFileFd = -1;
+//-- end PAH
 bool g_debug = false;
 bool g_disableEnterBootloader=false;
 static bool g_inBootloader = false;
@@ -220,6 +221,7 @@ static int resetCoPro( void )
         {
             fprintf( stderr, "%s write() could not set reset line to 1", currentTimeStr());
         }
+//-- end PAH
 /*
         if(write( g_resetFileFd, "0", 1 ) != 1) // Hold reset
         {
@@ -261,10 +263,9 @@ static int openResetLine(int port) {
         gpiod_chip_close(0);
         return -1;
     }
-
-    // Optional: return the line if you want to set value later
     return 0;
 }
+//--end PAH
 /*static int openResetFile( int port )
 {
     int fd;
