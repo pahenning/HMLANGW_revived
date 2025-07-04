@@ -25,9 +25,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <libgen.h>
-//--PAH
 #include <gpiod.h>
-//-- end PAH
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -53,10 +51,7 @@ static int g_serverBidcosFd = -1;
 static int g_serverKeepAliveFd = -1;
 static int g_serialFd = -1;
 static int g_termEventFd = -1;
-//-- PAH
 static struct gpiod_line *g_resetLine;
-//static int g_resetFileFd = -1;
-//-- end PAH
 bool g_debug = false;
 bool g_disableEnterBootloader=false;
 static bool g_inBootloader = false;
@@ -210,7 +205,6 @@ static int resetCoPro( void )
 {
    if( g_resetLine)
     {
-//--PAH
         if(gpiod_line_set_value(g_resetLine, 0) != 1) // Hold reset
         {
             fprintf( stderr, "%s write() could not set reset line to 0", currentTimeStr());
@@ -221,20 +215,6 @@ static int resetCoPro( void )
         {
             fprintf( stderr, "%s write() could not set reset line to 1", currentTimeStr());
         }
-//-- end PAH
-/*
-        if(write( g_resetFileFd, "0", 1 ) != 1) // Hold reset
-        {
-            fprintf( stderr, "%s write() could not set reset fd to 0", currentTimeStr());
-        }
-
-        usleep( 10000 ); // 10 ms should be ok
-        if(write( g_resetFileFd, "1", 1 ) != 1) // Release reset
-        {
-            fprintf( stderr, "%s write() could not set reset fd to 1", currentTimeStr());
-        }
-*/
-
     }
     return 0;
 }
@@ -265,53 +245,6 @@ static int openResetLine(int port) {
     }
     return 0;
 }
-//--end PAH
-/*static int openResetFile( int port )
-{
-    int fd;
-    char fileName[80];
-    snprintf( fileName, sizeof(fileName), "/sys/class/gpio/gpio%d/value", port );
-    if( access( fileName, F_OK ) == -1 )
-    {
-        snprintf( fileName, sizeof(fileName), "/sys/class/gpio/export" );
-        fd = open( fileName, O_WRONLY );
-        if( fd == -1 )
-        {
-            perror("open /sys/class/gpio/export");
-        }
-        else
-        {
-            snprintf( fileName, sizeof(fileName), "%d", port );
-            if( write( fd, fileName, strlen( fileName ) ) < 1 ) 
-            {
-                perror("write /sys/class/gpio/export");
-            }
-            close( fd );
-        }
-    }
-    snprintf( fileName, sizeof(fileName), "/sys/class/gpio/gpio%d/direction", port );
-    fd = open( fileName, O_WRONLY );
-    if( fd == -1 )
-    {
-        perror("open direction");
-    }
-    else
-    {
-        if( write( fd, "out", 3 ) < 3 ) 
-        {
-            perror("write direction");
-        }
-        close( fd );
-    }
-    snprintf( fileName, sizeof(fileName), "/sys/class/gpio/gpio%d/value", port );
-    fd = open( fileName, O_RDWR );
-    if( fd == -1 )
-    {
-        perror("open value");
-    }
-    return fd;
-}
-*/
 
 static int readUntilEOL( int fd, char *buffer, int bufsize )
 {
@@ -990,7 +923,6 @@ int main(int argc, char **argv)
     if( resetPort >= 0 )
     {
     
-    //-- PAH
         if(openResetLine( resetPort ) > 0 )
         {
             fprintf( stderr,  "%s Can't open reset line!\n", currentTimeStr() );
@@ -1005,7 +937,6 @@ int main(int argc, char **argv)
     }
     
     if( g_debug )
-    //-- PAH
         fprintf( stderr,  "%s reset  gpio port %d\n", currentTimeStr(),  resetPort );
         
     if( showSerial || updateFirmware )
