@@ -7,8 +7,6 @@ Note, that this library and its headers have to be installed by<
 
 sudo apt install libgpiod-dev gpiod
 
-Note, that this is a beta version
-
 
 Prof.Dr. Peter A. Henning
 June 2025
